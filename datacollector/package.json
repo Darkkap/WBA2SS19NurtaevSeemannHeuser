@@ -1,0 +1,12 @@
+{
+  "name": "datacollector",
+  "version": "0.0.1",
+  "dependencies": {
+    "date-and-time": "^0.6.3",
+    "mysql": "^2.17.1",
+    "replaceall": "^0.1.6",
+    "request": "^2.88.0",
+    "weeknumber": "^1.1.1",
+    "xml2js": "^0.4.19"
+  }
+}
