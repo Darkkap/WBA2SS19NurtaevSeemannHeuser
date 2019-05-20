@@ -1,0 +1,25 @@
+<html>
+
+<head>
+  <title>Express</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+
+<body>
+  <h1>Express</h1>
+  <p>Welcome to Express</p>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io('http://localhost:3000');
+    socket.on('connect', function(){
+      console.log("connected");
+    });
+    // MIT Socket Event können Events beschrieben werden. Benötigt für Pub/Sub
+    socket.on('event', function(data){});
+    socket.on('disconnect', function(){
+      console.log("disconnected");
+    });
+  </script>
+</body>
+
+</html>
