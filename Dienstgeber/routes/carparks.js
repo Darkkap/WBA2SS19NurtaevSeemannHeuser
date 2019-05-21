@@ -23,21 +23,21 @@ router.post('/', function(req, res, next) { // Anlegen eines neuen Parkhaus
 });
 
 router.get('/:id', function(req, res, next) {//Abruf Parkhaus ID
-  let id = req.query.id;
+  let id = req.params.id;
   res.status(200).write("Abruf Parkhaus. ID: "+id);
   next();
   res.end();
 });
 
 router.put('/:id', function(req, res, next) { //Bearbeiten des Parkhaus X
-  let id = req.query.id;
+  let id = req.params.id;
   res.status(200).write("Bearbeiten Parkhaus. ID: "+id);
   next();
   res.end();
 });
 
 router.delete('/:id', function(req, res, next) {  // Löschen des Parkhaus X
-  let id = req.query.id;
+  let id = req.params.id;
   res.status(200).write("Abruf Parkhaus. ID: "+id);
   next();
   res.end();
