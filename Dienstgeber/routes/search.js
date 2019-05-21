@@ -5,7 +5,7 @@ let mysql = require('mysql');
 let connection = mysql.createConnection({
   host: 'exo.ovh',
   user: 'wbauser',
-  password: 'wba_user',
+  password: 'wba-user',
   database: 'wba_data'
 });
 connection.connect();

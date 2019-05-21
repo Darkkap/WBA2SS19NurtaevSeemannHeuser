@@ -12,7 +12,7 @@ let weekNumber = require("weeknumber/lib/index.js").weekNumber;
 let connection = mysql.createConnection({
     host: 'exo.ovh',
     user: 'wbauser',
-    password: 'wba_user',
+    password: 'wba-user',
     database: 'wba_data'
 });
 connection.connect();
