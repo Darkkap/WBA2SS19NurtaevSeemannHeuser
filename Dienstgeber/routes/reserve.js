@@ -1,5 +1,13 @@
 let express = require('express');
 let router = express.Router();
+let mysql = require('mysql');
+let connection = mysql.createConnection({
+    host: 'exo.ovh',
+    user: 'wbauser',
+    password: 'wba_user',
+    database: 'wba_data'
+});
+connection.connect();
 
 
 router.post('/', function(req, res, next) { //Hiermit wird eine neue Leere Reservierung angelegt

@@ -1,7 +1,16 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
+let mysql = require('mysql');
+let connection = mysql.createConnection({
+  host: 'exo.ovh',
+  user: 'wbauser',
+  password: 'wba_user',
+  database: 'wba_data'
+});
+connection.connect();
 //Hier muss noch MYSQL für die Abfragen etc rein. Danach kann man daraus ein JSON Objekt dazu bauen.
+
 
 router.get('/', function(req, res, next) {  // Alle Suchanfragen
   res.status(200).write("Abruf aller Suchanfragen.");

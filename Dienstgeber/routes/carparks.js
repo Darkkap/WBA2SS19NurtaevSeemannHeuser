@@ -1,5 +1,13 @@
 var express = require('express');
 var router = express.Router();
+let mysql = require('mysql');
+let connection = mysql.createConnection({
+  host: 'exo.ovh',
+  user: 'wbauser',
+  password: 'wba_user',
+  database: 'wba_data'
+});
+connection.connect();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {  // Alle Parkhäuser
