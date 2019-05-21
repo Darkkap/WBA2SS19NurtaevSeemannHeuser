@@ -4,9 +4,9 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 
 
-let function2 = require('./routes/function2');
-let usersRouter = require('./routes/users');
-let function1 = require('./routes/function1');
+let carparks = require('./routes/carparks');
+let search = require('./routes/search');
+let reserve = require('./routes/reserve');
 let app = express();
 app.io=0;
 
@@ -18,9 +18,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Routen Definierung
 
-app.use('/function1', function1);
-app.use('/function2', function2);
-app.use('/users', usersRouter);
+app.use('/reserve', reserve);
+app.use('/carparks', carparks);
+app.use('/search', search);
 
 //Routen Definierung Ende
 module.exports = app;
