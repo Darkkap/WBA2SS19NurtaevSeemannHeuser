@@ -23,7 +23,6 @@ router.get('/', function(req, res, next) {  // Alle Parkhäuser
       res.status(200).json(parkhausobj);
       console.log(parkhausobj);
     }
-
     next();
     res.end();
   });
