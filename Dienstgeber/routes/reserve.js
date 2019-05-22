@@ -69,9 +69,15 @@ router.get('/:id', function(req, res, next) {      //Abruf der Reservierung mit 
 
 router.delete('/:id',function(req, res, next){  //Löschen der Reservierung mit ID
     let id = req.params.id;
-    res.status(200).write("OK, ID: "+id+" gelöscht.");
-    next();
-    res.end();
+    connection.query("delete from reservierung where reserveriungs_id ='"+id+"'" , function (error, results, fields) {
+        if(error) {
+            res.status(500).write("Internal Error");
+        } else {
+            res.status(200).write("OK, ID: "+id+" gelöscht.");
+        }
+        next();
+        res.end();
+    });
 });
 
 router.put('/:id',function(req, res, next){  //Bearbeiten der Daten der Reservierung mit ID

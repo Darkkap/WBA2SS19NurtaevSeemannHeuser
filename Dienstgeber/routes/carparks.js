@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 let mysql = require('mysql');
 let connection = mysql.createConnection({
   host: 'exo.ovh',
@@ -11,9 +11,25 @@ connection.connect();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {  // Alle Parkhäuser
-  res.status(200).write("Abruf aller Parkhäuser.");
-  next();
-  res.end();
+  let parkhausobj = {};
+  connection.query("Select * from parkhaus_info" , function (error, results, fields) {
+    parkhausobj.parkhaus = [];
+    for (let i = 0;i <= results.length-1;i++) {
+      parkhausobj.parkhaus.push(results[i]);
+    }
+    if (error) {
+      res.status(500).json({"parkhaus":"Error"});
+    }  else {
+      res.status(200).json(parkhausobj);
+      console.log(parkhausobj);
+    }
+
+    next();
+    res.end();
+  });
+
+
+
 });
 
 router.post('/', function(req, res, next) { // Anlegen eines neuen Parkhaus
