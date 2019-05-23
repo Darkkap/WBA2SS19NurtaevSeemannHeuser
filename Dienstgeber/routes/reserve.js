@@ -74,17 +74,24 @@ router.get('/cancellations', function (req, res, next) {      //Abruf Stornierte
 });
 
 router.post('/cancellations', function (req, res) {      //Erstellen einer Stornierung
-
+    var stornierung = {};
     stornierung.resid = req.body.resid;
-
-    stornierung.save(function (err) {
-        if (err)
-            res.send(err);
-        console.log('POST /');
-        console.dir(req.body);
-        res.status(200).write("Test");
-        res.end();
+    connection.query("Insert into stornierung values ('','','')", function (error, results, fields) {
+        if (error) {
+            res.status(404).json({"stornierung": "Error. Fehler beim anlegen der Stornierung"});
+            next();
+            res.end();
+        } else {
+            connection.query("SELECT LAST_INSERT_ID()", function (error, results, fields) {
+                console.log(results);
+                stornierung.ID = results;
+                res.status(200).json(stornierung);
+                next();
+                res.end();
+            });
+        }
     });
+    res.status(200).json({"stornierung": "test"});
 });
 
 router.get('/cancellations:id', function (req, res, next) {      //Abruf der Stornierten Reserveriungen ID
@@ -96,7 +103,7 @@ router.get('/cancellations:id', function (req, res, next) {      //Abruf der Sto
 
 router.put('/cancellations:id', function (req, res, next) {
 
-})
+});
 
 //einfache Aufrufe auf /reserve/:id müssen zuletzt kommen, da sie sonst /cancellations blocken. Dies ist zu beheben, indem man /reserve/id:id als Url nimmt.
 
