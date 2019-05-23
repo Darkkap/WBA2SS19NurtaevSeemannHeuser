@@ -81,7 +81,7 @@ router.put('/id:id', function (req, res, next) {      //Bearbeiten der Daten der
           {
               "suche_id": 1,
               "reservierungsid": 1,
-              "datum": "22.05.19",
+              "datum": "22.05.2019",
               "uhrzeit": "18.15",
               "gps": "50.7511915,7.1013477,12.75",
               "advice": 1
@@ -242,12 +242,12 @@ function doAdvice(data, id, callback) {     //Advice Funktion
                                     mathobject.specsearch_parkhaus[iy] = helper_array[iy].parkhaus_id; //Setzen der ParkhausID
                                     if (iy === helper_array.length - 1) {                       //Loop am Ende -> Auswertung
                                         for (let ixy = 0; ixy <= mathobject.specsearch_parkhaus.length - 1; ixy++) {
-                                            //console.log("Spec Search: ID " + mathobject.specsearch_parkhaus[ixy]);
-                                            //console.log("Spec Search: Frei " + mathobject.specsearch_free[ixy]);
-                                            //console.log("Spec Search: Frei_CURRENT " + mathobject.specsearch_free_current[ixy]);
-                                            //console.log("Durchschnitt frei: " + mathobject.amount[ixy] / mathobject.total[ixy]);
-                                            //console.log("Faktor: " + mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]);
-                                            //console.log("Durchschnitt bearbeitet: " + mathobject.amount[ixy] / mathobject.total[ixy] * mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]);
+                                            console.log("Spec Search: ID " + mathobject.specsearch_parkhaus[ixy]);
+                                            console.log("Spec Search: Frei " + mathobject.specsearch_free[ixy]);
+                                            console.log("Spec Search: Frei_CURRENT " + mathobject.specsearch_free_current[ixy]);
+                                            console.log("Durchschnitt frei: " + mathobject.amount[ixy] / mathobject.total[ixy]);
+                                            console.log("Faktor: " + mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]);
+                                            console.log("Durchschnitt bearbeitet: " + mathobject.amount[ixy] / mathobject.total[ixy] * mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]);
                                             if (mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy] <= 0.75 && (mathobject.amount[ixy] / mathobject.total[ixy] * mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]) <= 30 || isNaN(mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy])) {
                                                 //Wenn der Faktor der Abweichung über 25% entspricht anderes Parkhaus wählen, oder wenn die Mindestanzahl an Plätze im Parkhaus mit korrigiertem Wert <= 30 ist nächstes Parkhaus testen
                                                 //console.log("differenz zu groß bei parkhausid: " + mathobject.specsearch_parkhaus[ixy] + " oder zu wenig freie plätze");
