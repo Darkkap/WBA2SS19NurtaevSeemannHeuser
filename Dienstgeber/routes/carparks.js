@@ -32,16 +32,40 @@ router.get('/', function(req, res, next) {  // Alle Parkhäuser
 });
 
 router.post('/', function(req, res, next) { // Anlegen eines neuen Parkhaus
-  res.status(200).write("Anlegen eines Neuen Parkhauses.");
-  next();
-  res.end();
+  let insertobj = {};
+  connection.query("Insert into  parkhaus_info values ('','','','','')", function (error, results, fields) {
+    if (error) {
+      res.status(404).json({"Parkhaus": "Error. Fehler beim anlegen gefunden"});
+      next();
+      res.end();
+    } else {
+      connection.query("SELECT LAST_INSERT_ID()", function (error, results, fields) {
+        console.log(results);
+        insertobj.ID = results;
+        res.status(200).json(insertobj);
+        next();
+        res.end();
+      });
+    }
+  });
 });
 
 router.get('/:id', function(req, res, next) {//Abruf Parkhaus ID
   let id = req.params.id;
-  res.status(200).write("Abruf Parkhaus. ID: "+id);
-  next();
-  res.end();
+  id = id.replace(":", "");
+  let sucheobj = {};
+  connection.query("Select * from parkhaus_info where parkhaus_id='" + id + "'", function (error, results, fields) {
+    if (results.length < 1) {
+      res.status(404).json({"Parkhaus_info": "Error. Keine Details gefunden"});
+      next();
+      res.end();
+    } else {
+      sucheobj.suche = results;
+      res.status(200).json(sucheobj);
+      next();
+      res.end();
+    }
+  });
 });
 
 router.put('/:id', function(req, res, next) { //Bearbeiten des Parkhaus X
