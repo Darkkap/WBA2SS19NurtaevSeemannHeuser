@@ -26,16 +26,13 @@ router.get('/', function(req, res, next) {  // Alle Parkhäuser
     next();
     res.end();
   });
-
-
-
 });
 
 router.post('/', function(req, res, next) { // Anlegen eines neuen Parkhaus
   let insertobj = {};
-  connection.query("Insert into  parkhaus_info values ('','','','','')", function (error, results, fields) {
+  connection.query("Insert into  parkhaus_info values ('','','','')", function (error, results, fields) {
     if (error) {
-      res.status(404).json({"Parkhaus": "Error. Fehler beim anlegen gefunden"});
+      res.status(404).json({"Parkhaus": "Error. Fehler beim anlegen"});
       next();
       res.end();
     } else {
@@ -69,18 +66,51 @@ router.get('/:id', function(req, res, next) {//Abruf Parkhaus ID
 });
 
 router.put('/:id', function(req, res, next) { //Bearbeiten des Parkhaus X
+
+  /*
+
+    {
+            "position": "50.7319997,7.0956021,17.25z",
+            "parkhaus_id": 1,
+            "winkel": 195
+    }
+
+  **/
   let id = req.params.id;
-  res.status(200).write("Bearbeiten Parkhaus. ID: "+id);
+  id = id.replace(":", "");
+  let position = req.body.position;
+  let parkhaus_id =req.body.parkhaus_id;
+  let winkel = req.body.winkel;
+  if(position !== undefined) {
+    connection.query("update parkhaus_info set position='"+position+"'  where id='" + id + "'", function (error, results, fields) {
+    });
+  }
+  if(parkhaus_id !== undefined) {
+    connection.query("update parkhaus_info set parkhaus_id='"+parkhaus_id+"'  where id='" + id + "'", function (error, results, fields) {
+    });
+  }
+  if(winkel !== undefined) {
+    connection.query("update parkhaus_info set winkel='"+winkel+"'  where id='" + id + "'", function (error, results, fields) {
+    });
+  }
+  res.status(200).write("Änderung abgeschlossen.");
   next();
   res.end();
+
 });
 
 router.delete('/:id', function(req, res, next) {  // Löschen des Parkhaus X
   let id = req.params.id;
-  res.status(200).write("Abruf Parkhaus. ID: "+id);
-  next();
-  res.end();
+  id = id.replace(":", "");
+  connection.query("delete from parkhaus_info where parkhaus_id ='" + id + "'", function (error, results, fields) {
+    if (error) {
+      res.status(500).write("Internal Error");
+    } else {
+      res.status(200).write("OK, ID: " + id + " gelöscht.");
+    }
+    next();
+    res.end();
+  });
 });
-
 
 module.exports = router;
