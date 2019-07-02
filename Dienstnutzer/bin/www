@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+//exo.ovh:3000
 /**
  * Module dependencies.
  */
@@ -12,7 +12,7 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3030');
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
@@ -93,4 +93,11 @@ var io = require('socket.io')(server);
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  socket.emit('message',{hello:"world"});
+
+  socket.on('reservationdata', function(reservationdata){
+    console.log(reservationdata);
+  });
+
+
 });

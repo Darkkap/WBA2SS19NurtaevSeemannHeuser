@@ -7,17 +7,44 @@
           src="https://code.jquery.com/jquery-3.4.1.min.js"
           integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
           crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
   <h1>Restaurantreservierung</h1>
-  <p>Welcome to Express</p>
-  <button onclick="myFunction()">Click me</button>
-  <script src="/socket.io/socket.io.js"></script>
+  <div id="initalPage">
+  <label for="number">Anzahl Personen:</label>
+  <input type="number" name="name" id="number" value="">
+  <br>
+  <label for="time">Uhrzeit:</label>
+  <input type="time" name="name" id="time" value="">
+  <br>
+  <label for="date">Datum:</label>
+  <input type="date" name="name" id="date" value="">
+  <br>
+  <button id="reserve">Jetzt reservieren</button>
+  </div>
+  <div id="afterReservation">
+  </div>
   <script>
-    var socket = io();
+      $(function () {
+      var socket = io('http://localhost:3030/');
+      socket.on('message',function() {
+        console.log("Testtt");
+      });
+      $('#reserve').click(function(e){
+          console.log("Test");
+          let reservationdata = {};
+          e.preventDefault(); // prevents page reloading
+          reservationdata.number = $('#number').val();
+          reservationdata.time = $('#time').val();
+          reservationdata.date = $('#date').val();
+          socket.emit('reservationdata', reservationdata);
+          //$('#initalPage').empty();
+        });
+      });
   </script>
 </body>
-
 </html>
 
