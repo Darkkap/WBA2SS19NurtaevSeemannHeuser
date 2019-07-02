@@ -7,12 +7,13 @@
 var app = require('../app');
 var debug = require('debug')('dienstnutzer:server');
 var http = require('http');
+let request = require('request');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '3030');
 app.set('port', port);
 
 /**
@@ -98,6 +99,10 @@ io.on('connection', function(socket){
   socket.on('reservationdata', function(reservationdata){
     console.log(reservationdata);
   });
+});
 
-
+request('http://exo.ovh:3000/carparks', function(error, response, body) {
+  console.log('error:', error);
+  console.log('statusCode:', response && response.statusCode);
+  console.log('body:', body);
 });
