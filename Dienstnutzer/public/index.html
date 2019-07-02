@@ -1,54 +1,68 @@
 <html>
 <head>
-  <title>Express</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
-  <script
-          src="https://code.jquery.com/jquery-3.4.1.min.js"
-          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-          crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <title>Express</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+            integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 </head>
 <body>
-  <h1>Restaurantreservierung</h1>
-  <div id="initalPage">
-  <label for="number">Anzahl Personen:</label>
-  <input type="number" name="name" id="number" value="">
-  <br>
-  <label for="time">Uhrzeit:</label>
-  <input type="time" name="name" id="time" value="">
-  <br>
-  <label for="date">Datum:</label>
-  <input type="date" name="name" id="date" value="">
-  <br>
-  <button id="reserve">Jetzt reservieren</button>
-    <iframe target ="_top"  width="600"
+<h1>Restaurantreservierung</h1>
+<div id="initalPage">
+    <label for="number">Anzahl Personen:</label>
+    <input type="number" name="name" id="number" value="">
+    <br>
+    <label for="time">Uhrzeit:</label>
+    <input type="time" name="name" id="time" value="">
+    <br>
+    <label for="date">Datum:</label>
+    <input type="date" name="name" id="date" value="">
+    <br>
+    <button id="reserve">Jetzt reservieren</button>
+    <iframe target="_top" width="600"
             height="450"
             frameborder="0" style="border:0"
-            src="https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY
-    &q=Space+Needle,Seattle+WA" allowfullscreen></iframe>
-  </div>
-  <div id="afterReservation">
-  </div>
-  <div id="searchCarparks">
-  </div>
-  <script>
-      $(function () {
-      let socket = io('http://localhost:3030/');
-      socket.on('message',function() {
-        console.log("Testtt");
-      });
-      $('#reserve').click(function(e){
-          console.log("Test");
-          let reservationdata = {};
-          e.preventDefault(); // prevents page reloading
-          reservationdata.number = $('#number').val();
-          reservationdata.time = $('#time').val();
-          reservationdata.date = $('#date').val();
-          socket.emit('reservationdata', reservationdata);
-          //$('#initalPage').empty();
+            src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyBVgTiWDbf4snT64vZvGfEZ36qXWPewvko&origin=Oslo+Norway&destination=Telemark+Norway"
+            allowfullscreen></iframe>
+</div>
+<div id="afterReservation">
+</div>
+<div id="searchCarparks">
+</div>
+
+<script>
+    $(function () {//Socketio setup
+        let latitude = 0;
+        let longitude = 0;
+
+        let socket = io('http://localhost:3030/');
+        socket.on('message', function () {
+            console.log("Testtt");
         });
-      });
-  </script>
+        $('#reserve').click(function (e) {
+            console.log("Test");
+            let reservationdata = {};
+            e.preventDefault(); // prevents page reloading
+            reservationdata.number = $('#number').val();
+            reservationdata.time = $('#time').val();
+            reservationdata.date = $('#date').val();
+            socket.emit('reservationdata', reservationdata);
+            //$('#initalPage').empty();
+        });
+        //get coordinates
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            }
+        function showPosition(position) {   // If Access Granted Set GPS Position in Long/Lat.
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+        }
+
+    });
+</script>
 </body>
 </html>
 
