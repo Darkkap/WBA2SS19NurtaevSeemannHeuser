@@ -12,17 +12,54 @@ connection.connect();
 
 router.post('/', function (req, res, next) { //Hiermit wird eine neue Leere Reservierung angelegt
     let postobject = {};
-    connection.query("Insert into reservierung values ('','','','','0')", function (error, results, fields) {
+    postobject.req = req.body;
+    /*
+
+      {
+        "anzahl_personen": 2,
+        "datum": "22.05.2019",
+        "uhrzeit": "18.15"
+    }
+
+    **/
+    let anzahl = 0;
+    let datum = 0;
+    let uhrzeit = 0;
+    if(req.body.anzahl_personen === undefined) {
+        anzahl =0;
+    } else {
+        anzahl =req.body.anzahl_personen;
+    }
+
+    if(req.body.datum === undefined) {
+        datum = "02.07.2019"
+    } else {
+        datum = req.body.datum;
+    }
+
+    if(req.body.uhrzeit === undefined) {
+        uhrzeit = 0;
+    } else {
+        uhrzeit = req.body.uhrzeit;
+    }
+
+
+    connection.query("Insert into reservierung values ('','"+anzahl+"','"+datum+"','"+uhrzeit+"','0')", function (error, results, fields) {
         if (error) {
             res.status(404).json({"Reservierung": "Error. Fehler beim anlegen der Reservierung"});
             next();
             res.end();
         } else {
-            connection.query("SELECT LAST_INSERT_ID()", function (error, results, fields) {
-                postobject.ID = results;
-                res.status(200).json(postobject);
-                next();
-                res.end();
+            connection.query("SELECT LAST_INSERT_ID() as id", function (error, results, fields) {
+                let lastid= results[0].id;
+                console.log(lastid);
+                connection.query("SELECT * from reservierung where reservierungs_id ='"+lastid+"' ", function (error, resultee, fields) {
+                    console.log(error);
+                    res.status(200).json(resultee);
+                    next();
+                    res.end();
+                });
+
             });
         }
     });
@@ -95,9 +132,8 @@ router.post('/cancellations', function (req, res, next) {      //Erstellen einer
             next();
             res.end();
         } else {
-            connection.query("SELECT LAST_INSERT_ID()", function (error, results, fields) {
-                stornierung.ID = results;
-                res.status(200).json(stornierung);
+            connection.query("SELECT LAST_INSERT_ID() as id", function (error, results, fields) {
+                res.status(200).json(results);
                 next();
                 res.end();
             });
@@ -225,8 +261,8 @@ router.put('/id:id', function (req, res, next) {  //Bearbeiten der Daten der Res
 
           {
             "anzahl_personen": 2,
-            "datum": "22.05.19",
-            "uhrzeit": "18.15",
+            "datum": "22.05.2019",
+            "uhrzeit": "18.15"
         }
 
         **/
@@ -331,6 +367,7 @@ router.put('/id:id', function (req, res, next) {  //Bearbeiten der Daten der Res
     }
 
 });
+
 
 function datadone(done_obj,res) {
     if (done_obj===0) {

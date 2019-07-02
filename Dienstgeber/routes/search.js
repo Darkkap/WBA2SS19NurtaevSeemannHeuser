@@ -86,8 +86,8 @@ router.put('/id:id', function (req, res, next) {      //Bearbeiten der Daten der
               "gps": "50.7511915,7.1013477,12.75",
               "advice": 1
           }
-
     **/
+
     let id = req.params.id;
     id = id.replace(":", "");
     let position = req.body.gps;
@@ -165,22 +165,22 @@ function request_winkel(position, callback) {
 
 function doAdvice(data, id, callback) {     //Advice Funktion
     let advice_data;
-    let parkhaus_data = {};                 // Definierung von Daten
-    parkhaus_data.parkhaus = [];
+    let calculation_data = {};                 // Definierung von Daten
+    calculation_data.parkhaus = [];
     connection.query("Select * from suche where suche_id='" + id + "'", function (error, results, fields) { //Aufruf der Informationen bzgl. der Suche
         advice_data = results;
         connection.query("Select * from parkhaus_info", function (error, results, fields) {                 //Informationen bzgl. Parkhäuser lesen
             for (let x = 0; x <= results.length - 1; x++) {
-                parkhaus_data.parkhaus.push(results[x]);
+                calculation_data.parkhaus.push(results[x]);
             }
             let helper_array = [];
             let user_winkel = data;
-            for (let i = 0; i <= parkhaus_data.parkhaus.length - 1; i++) {
-                parkhaus_data.parkhaus[i].winkel -= user_winkel;
-                if (parkhaus_data.parkhaus[i].winkel < 0) parkhaus_data.parkhaus[i].winkel * -1; //Wenn negativ *-1
+            for (let i = 0; i <= calculation_data.parkhaus.length - 1; i++) {
+                calculation_data.parkhaus[i].winkel -= user_winkel;
+                if (calculation_data.parkhaus[i].winkel < 0) calculation_data.parkhaus[i].winkel * -1; //Wenn negativ *-1
                 helper_array.push({                                                                                     // Push ins Hilfsarray
-                    "winkel": parkhaus_data.parkhaus[i].winkel,
-                    "parkhaus_id": parkhaus_data.parkhaus[i].parkhaus_id
+                    "winkel": calculation_data.parkhaus[i].winkel,
+                    "parkhaus_id": calculation_data.parkhaus[i].parkhaus_id
                 });
             }
             helper_array.sort(function (a, b) {                                                              // Sortierung der Parkhäuser nach Winkel
@@ -191,10 +191,10 @@ function doAdvice(data, id, callback) {     //Advice Funktion
                 if (keyA > keyB) return 1;
                 return 0;
             });
-            let mathobject = {};                                                                                        //Anlegen eines Objektes für die Berechnung der Parkhausdaten
-            mathobject.amount = [];
-            mathobject.total = [];
-            mathobject.max = [];
+            let parkhaus_object = {};                                                                                        //Anlegen eines Objektes für die Berechnung der Parkhausdaten
+            parkhaus_object.amount = [];
+            parkhaus_object.total = [];
+            parkhaus_object.max = [];
             let helper = advice_data[0].datum;                                                                          //Split der Eingegebenen Datums Infos
             helper = helper.split(".");
             helper = helper[2] + "-" + helper[1] + "-" + helper[0];
@@ -206,56 +206,52 @@ function doAdvice(data, id, callback) {     //Advice Funktion
             let h = uhrzeithelper[0];  // Stunde
             let m = uhrzeithelper[1]; // Minute
             for (let y = 0; y <= helper_array.length - 1; y++) {                                                        //Loop durch das Helper Array, da es die Infos bzgl. Parkhäuser enthält (auch Menge)
-                mathobject.amount[y] = 0;
-                mathobject.max[y] = 0;
-                mathobject.total[y] = 0;
-                mathobject.specsearch_free = [];                                                                        // Frei zur STUNDE & MINUTE Letzte Woche/2W./3W.
-                mathobject.specsearch_parkhaus = [];                                                                    // Parkhaus_ID zum Objekt zur Identifizierung
-                mathobject.specsearch_free_current = [];                                                                // FREI LIVE
+                parkhaus_object.amount[y] = 0;
+                parkhaus_object.max[y] = 0;
+                parkhaus_object.total[y] = 0;
+                parkhaus_object.specsearch_free = [];                                                                        // Frei zur STUNDE & MINUTE Letzte Woche/2W./3W.
+                parkhaus_object.specsearch_parkhaus = [];                                                                    // Parkhaus_ID zum Objekt zur Identifizierung
+                parkhaus_object.specsearch_free_current = [];                                                                // FREI LIVE
                 connection.query("select * from parkhaus_data where tag='" + n + "' and hour='" + h + "' and lfdnr='" + helper_array[y].parkhaus_id + "' and (weeknumber='" + (week - 3) + "' or weeknumber ='" + (week - 1) + "' or weeknumber='" + (week - 2) + "') order by id desc", function (error, resulte, fields) {
-                    mathobject.max[y] = resulte[0].gesamt;                                                              //Abruf der Daten der Letzten 3 Wochen zur Angegebenen Stunde & Tag
+                    parkhaus_object.max[y] = resulte[0].gesamt;                                                              //Abruf der Daten der Letzten 3 Wochen zur Angegebenen Stunde & Tag
                     for (let ic = 0; ic <= resulte.length - 1; ic++) {                                                  // Werte Parsen, anzahl erhöhen.
-                        mathobject.amount[y] += parseInt(resulte[ic].frei);
-                        mathobject.total[y] += 1;
+                        parkhaus_object.amount[y] += parseInt(resulte[ic].frei);
+                        parkhaus_object.total[y] += 1;
                     }
                     if (y === helper_array.length - 1) {
-                        for (let iy = 0; iy <= mathobject.amount.length - 1; iy++) {
-                            //console.log("Parkhaus ID " + helper_array[iy].parkhaus_id + " totalfreespaces counted " + mathobject.amount[iy]);
-                            //console.log("Parkhaus ID " + helper_array[iy].parkhaus_id + " counter_var " + mathobject.total[iy]);
-                            //console.log("Parkhaus ID " + helper_array[iy].parkhaus_id + " Average Free " + mathobject.amount[iy] / mathobject.total[iy]);
-                            //console.log("Parkhaus ID " + helper_array[iy].parkhaus_id + " max_possible " + mathobject.max[iy]);
+                        for (let iy = 0; iy <= parkhaus_object.amount.length - 1; iy++) {
                             m = new Date().getMinutes();
                             h = new Date().getHours();                                                                  //Abruf der Daten zur aktuellen Stunde & Minute der letzten 3 Wochen für jedes Parkhaus
                             connection.query("select * from parkhaus_data where tag='" + n + "' and hour='" + h + "' and min='" + m + "' and lfdnr='" + helper_array[iy].parkhaus_id + "' and (weeknumber='" + (week - 3) + "' or weeknumber ='" + (week - 1) + "' or weeknumber='" + (week - 2) + "') order by id desc", function (error, result, fields) {
                                 //console.log("select * from parkhaus_data where tag='" + n + "' and hour='" + h + "' and min='" + m + "' and lfdnr='" + helper_array[iy].parkhaus_id + "' and (weeknumber='" + (week - 3) + "' or weeknumber ='" + (week - 1) + "' or weeknumber='" + (week - 2) + "') order by id desc");
-                                mathobject.specsearch_free[iy] = 0;
-                                mathobject.specsearch_parkhaus[iy] = 0;
+                                parkhaus_object.specsearch_free[iy] = 0;
+                                parkhaus_object.specsearch_parkhaus[iy] = 0;
                                 let free = 0;
                                 for (let ix = 0; ix <= result.length - 1; ix++) {                                       //Addieren der Datensätze
                                     free += result[ix].frei;
                                 }
                                 //Abruf Aktueller Datensatz                                                             //Live Datensatz abfragen
                                 connection.query("select * from parkhaus_data where lfdnr='" + helper_array[iy].parkhaus_id + "' order by id desc limit 1", function (error, results, fields) {
-                                    mathobject.specsearch_free_current[iy] = 0;//Array INIT
-                                    mathobject.specsearch_free_current[iy] = results[0].frei;   //Current Free schreiben
-                                    mathobject.specsearch_free[iy] = free / result.length;      //Durchschnitt der letzten 3 Wochen bilden
-                                    mathobject.specsearch_parkhaus[iy] = helper_array[iy].parkhaus_id; //Setzen der ParkhausID
+                                    parkhaus_object.specsearch_free_current[iy] = 0;//Array INIT
+                                    parkhaus_object.specsearch_free_current[iy] = results[0].frei;   //Current Free schreiben
+                                    parkhaus_object.specsearch_free[iy] = free / result.length;      //Durchschnitt der letzten 3 Wochen bilden
+                                    parkhaus_object.specsearch_parkhaus[iy] = helper_array[iy].parkhaus_id; //Setzen der ParkhausID
                                     if (iy === helper_array.length - 1) {                       //Loop am Ende -> Auswertung
-                                        for (let ixy = 0; ixy <= mathobject.specsearch_parkhaus.length - 1; ixy++) {
-                                            console.log("Spec Search: ID " + mathobject.specsearch_parkhaus[ixy]);
-                                            console.log("Spec Search: Frei " + mathobject.specsearch_free[ixy]);
-                                            console.log("Spec Search: Frei_CURRENT " + mathobject.specsearch_free_current[ixy]);
-                                            console.log("Durchschnitt frei: " + mathobject.amount[ixy] / mathobject.total[ixy]);
-                                            console.log("Faktor: " + mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]);
-                                            console.log("Durchschnitt bearbeitet: " + mathobject.amount[ixy] / mathobject.total[ixy] * mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]);
-                                            if (mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy] <= 0.75 && (mathobject.amount[ixy] / mathobject.total[ixy] * mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]) <= 30 || isNaN(mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy])) {
+                                        for (let ixy = 0; ixy <= parkhaus_object.specsearch_parkhaus.length - 1; ixy++) {
+                                            console.log("Spec Search: ID " + parkhaus_object.specsearch_parkhaus[ixy]);
+                                            console.log("Spec Search: Frei " + parkhaus_object.specsearch_free[ixy]);
+                                            console.log("Spec Search: Frei_CURRENT " + parkhaus_object.specsearch_free_current[ixy]);
+                                            console.log("Durchschnitt frei: " + parkhaus_object.amount[ixy] / parkhaus_object.total[ixy]);
+                                            console.log("Faktor: " + parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]);
+                                            console.log("Durchschnitt bearbeitet: " + parkhaus_object.amount[ixy] / parkhaus_object.total[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]);
+                                            if (parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] <= 0.75 && (parkhaus_object.amount[ixy] / parkhaus_object.total[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]) <= 30 || isNaN(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy])) {
                                                 //Wenn der Faktor der Abweichung über 25% entspricht anderes Parkhaus wählen, oder wenn die Mindestanzahl an Plätze im Parkhaus mit korrigiertem Wert <= 30 ist nächstes Parkhaus testen
                                                 //console.log("differenz zu groß bei parkhausid: " + mathobject.specsearch_parkhaus[ixy] + " oder zu wenig freie plätze");
-                                            } else if(mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy] > 0.75 && (mathobject.amount[ixy] / mathobject.total[ixy] * mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy]) > 30 || isNaN(mathobject.specsearch_free_current[ixy] / mathobject.specsearch_free[ixy] === false)){
+                                            } else if(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] > 0.75 && (parkhaus_object.amount[ixy] / parkhaus_object.total[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]) > 30 || isNaN(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] === false)){
                                                 // Passendes Parkhaus gefunden, Callback ausführen mit Parkhaus_ID & Mathobject
-                                                callback(mathobject.specsearch_parkhaus[ixy], mathobject);
-                                                ixy = mathobject.specsearch_parkhaus.length;
-                                            } else if(ixy === mathobject.specsearch_parkhaus.length - 1) { //Wenn kein passendes Parkhaus gefunden werden kann -> 0 zurückgeben.
+                                                callback(parkhaus_object.specsearch_parkhaus[ixy], parkhaus_object);
+                                                ixy = parkhaus_object.specsearch_parkhaus.length;
+                                            } else if(ixy === parkhaus_object.specsearch_parkhaus.length - 1) { //Wenn kein passendes Parkhaus gefunden werden kann -> 0 zurückgeben.
                                                 callback(0,0);
                                             }
                                         }
