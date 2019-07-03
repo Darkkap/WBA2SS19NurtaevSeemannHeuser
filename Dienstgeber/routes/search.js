@@ -34,20 +34,76 @@ router.get('/', function (req, res, next) {  // Alle Suchanfragen
 });
 
 router.post('/', function (req, res, next) {  // Neue Suchanfrage anlegen
-    let insertobj = {};
-    connection.query("Insert into  suche values ('','','','','','')", function (error, results, fields) {
-        if (error) {
-            res.status(404).json({"Suche": "Error. Fehler beim anlegen gefunden"});
-            next();
-            res.end();
-        } else {
-            connection.query("SELECT LAST_INSERT_ID() as id", function (error, results, fields) {
-                res.status(200).json(results);
+
+    /*
+
+         {
+             "suche_id": 1,
+             "reservierungsid": 1,
+             "datum": "22.05.2019",
+             "uhrzeit": "18.15",
+             "gps": "50.7511915,7.1013477,12.75",
+             "advice": 1
+         }
+   **/
+
+    let position = 0;
+    if(req.body.gps !== undefined){
+        position = req.body.gps;
+    }
+    let datum = 0;
+    if(req.body.datum !== undefined) {
+        datum = req.body.datum;
+    }
+    let uhrzeit = 0;
+    if(req.body.uhrzeit !== undefined){
+        uhrzeit = req.body.uhrzeit;
+    }
+    let reservierungsid = 0;
+    if(req.body.reservierungsid !== undefined) {
+        reservierungsid = req.body.reserverierungsid;
+    }
+    if (position === 0) {
+        connection.query("Insert into  suche values ('','"+reservierungsid+"','"+datum+"','"+uhrzeit+"','"+position+"','')", function (error, results, fields) {
+            if (error) {
+                res.status(404).json({"Suche": "Error. Fehler beim anlegen gefunden"});
                 next();
                 res.end();
-            });
-        }
-    });
+            } else {
+                connection.query("SELECT LAST_INSERT_ID() as id", function (error, results, fields) {
+                    res.status(200).json(results);
+                    next();
+                    res.end();
+                });
+            }
+        });
+    } else {
+
+        connection.query("Insert into  suche values ('','"+reservierungsid+"','"+datum+"','"+uhrzeit+"','"+position+"','')", function (error, results, fields) {
+            if (error) {
+            } else {
+                connection.query("SELECT LAST_INSERT_ID() as id", function (error, results, fields) {
+                    let id=results[0].id;
+                    request_winkel(position, function (data) {
+                        if (isNaN(data)) {
+                            res.status(500).write("Data Error");
+                            next();
+                            res.end();
+                        } else {
+                            doAdvice(data, id, function (advice,mathobject) {
+                                connection.query("update suche set advice='"+advice+"' where suche_id='"+id+"'", function (error, results, fields) {});
+                                res.status(200).write("ID: "+id);
+                                next();
+                                res.end();
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
+    }
+
 
 
 });
