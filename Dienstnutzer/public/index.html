@@ -24,6 +24,10 @@
     <button id="reserve">Jetzt reservieren</button>
 </div>
 <div id="afterReservation">
+    <p id="gebucht">Ihr Restaurantbesuch wurde erfolgreich gebucht.</p>
+    <p id="nichtGebucht">Tut mir Leid, aber leider ist kein Platz mehr frei.</p>
+    <br>
+    <button id="reserve">Jetzt nächstmögliches Parkhaus suchen</button>
 </div>
 <div id="searchCarparks">
     <iframe target="_top" width="600"
@@ -41,18 +45,27 @@
         socket.on('message', function () {
             console.log("Verbindung wurde aufgebaut");
         });
-        $('#afterReservation').empty();
-        $('#searchCarparks').empty();
-        $('#reserve').click(function (e) {
-            console.log("Test");
-            let reservationdata = {};
-            e.preventDefault(); // prevents page reloading
-            reservationdata.anzahl_personen = $('#number').val();
-            reservationdata.uhrzeit = $('#time').val();
-            reservationdata.datum = $('#date').val();
-            socket.emit('reservationdata', reservationdata);
-            //$('#initalPage').empty();
-        });
+        $('#gebucht').hide();
+        $('#nichtGebucht').hide();
+        $('#afterReservation').hide();
+        $('#searchCarparks').hide();
+            $('#reserve').click(function (e) {
+                console.log("Test");
+                let reservationdata = {};
+                e.preventDefault(); // prevents page reloading
+                reservationdata.anzahl_personen = $('#number').val();
+                reservationdata.uhrzeit = $('#time').val();
+                reservationdata.datum = $('#date').val();
+                socket.emit('reservationdata', reservationdata);
+                $('#initalPage').hide();
+                if (response.statusCode == 200) {
+                    $('#afterReservation').show();
+                    $('#gebucht').show();
+                } else {
+                    $('#afterReservation').show();
+                    $('#nichtGebucht').show();
+                }
+            });
         //get coordinates
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
@@ -61,6 +74,7 @@
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
         }
+
     });
 </script>
 </body>
