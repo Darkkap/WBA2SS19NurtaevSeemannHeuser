@@ -30,6 +30,7 @@
     <button id="reserveCarpark">Jetzt nächstmögliches Parkhaus suchen</button>
 </div>
 <div id="searchCarparks">
+    <p>Hier sehen Sie Ihre Route zum nächstmöglichen Parkhaus</p>
     <iframe target="_top" width="600"
             height="450"
             frameborder="0" style="border:0"
@@ -51,7 +52,7 @@
         $('#afterReservation').hide();
         $('#searchCarparks').hide();
             $('#reserveRestaurant').click(function (e) {
-                console.log("Test");
+                console.log("Button Restaurant Test");
                 let reservationdata = {};
                 e.preventDefault(); // prevents page reloading
                 reservationdata.anzahl_personen = $('#number').val();
@@ -60,7 +61,7 @@
                 socket.emit('reservationdata', reservationdata);
                 $('#initalPage').hide();
                 socket.on('response', function (response) {
-                    console.log("das emit funktioniert");
+                    console.log("Erhalte Informationen vom Dienstnutzer");
                     if (response.statusCode == 200) {
                         $('#afterReservation').show();
                         $('#gebucht').show();
@@ -80,6 +81,15 @@
             longitude = position.coords.longitude;
         }
 
+        $('#reserveCarpark').click(function (e) {
+            console.log("Button Carpark Test");
+            e.preventDefault(); // prevents page reloading
+            socket.emit('position', showPosition());
+            //Hier wird die Position eingebunden?
+            $('#gebucht').hide();
+            $('#reserveCarpark').hide();
+            $('#searchCarparks').show();
+        });
     });
 </script>
 </body>
