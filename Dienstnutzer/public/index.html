@@ -21,13 +21,13 @@
     <label for="date">Datum:</label>
     <input type="date" name="name" id="date" value="">
     <br>
-    <button id="reserve">Jetzt reservieren</button>
+    <button id="reserveRestaurant">Jetzt reservieren</button>
 </div>
 <div id="afterReservation">
     <p id="gebucht">Ihr Restaurantbesuch wurde erfolgreich gebucht.</p>
     <p id="nichtGebucht">Tut mir Leid, aber leider ist kein Platz mehr frei.</p>
     <br>
-    <button id="reserve">Jetzt nächstmögliches Parkhaus suchen</button>
+    <button id="reserveCarpark">Jetzt nächstmögliches Parkhaus suchen</button>
 </div>
 <div id="searchCarparks">
     <iframe target="_top" width="600"
@@ -45,11 +45,12 @@
         socket.on('message', function () {
             console.log("Verbindung wurde aufgebaut");
         });
+        $('#reserveCarpark').hide();
         $('#gebucht').hide();
         $('#nichtGebucht').hide();
         $('#afterReservation').hide();
         $('#searchCarparks').hide();
-            $('#reserve').click(function (e) {
+            $('#reserveRestaurant').click(function (e) {
                 console.log("Test");
                 let reservationdata = {};
                 e.preventDefault(); // prevents page reloading
@@ -58,13 +59,17 @@
                 reservationdata.datum = $('#date').val();
                 socket.emit('reservationdata', reservationdata);
                 $('#initalPage').hide();
-                if (response.statusCode == 200) {
-                    $('#afterReservation').show();
-                    $('#gebucht').show();
-                } else {
-                    $('#afterReservation').show();
-                    $('#nichtGebucht').show();
-                }
+                socket.on('response', function (response) {
+                    console.log("das emit funktioniert");
+                    if (response.statusCode == 200) {
+                        $('#afterReservation').show();
+                        $('#gebucht').show();
+                        $('#reserveCarpark').show();
+                    } else {
+                        $('#afterReservation').show();
+                        $('#nichtGebucht').show();
+                    }
+                })
             });
         //get coordinates
         if (navigator.geolocation) {

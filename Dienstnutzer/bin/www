@@ -100,13 +100,14 @@ io.on('connection', function(socket){
         console.log(reservationdata);
         //Datenübertragung an den Dienstgeber
 
-        /*request.post({
+        request.post({
             headers: {'content-type' : 'application/json'},
             url:     'http://exo.ovh:3000/reserve/',
             body:    reservationdata,
             json: true
         }, function(error, response, body){
             console.log(body);
-        });*/
+            socket.emit('response', response);
+        });
     });
 });
