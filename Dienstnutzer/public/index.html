@@ -47,9 +47,9 @@
             console.log("Test");
             let reservationdata = {};
             e.preventDefault(); // prevents page reloading
-            reservationdata.number = $('#number').val();
-            reservationdata.time = $('#time').val();
-            reservationdata.date = $('#date').val();
+            reservationdata.anzahl_personen = $('#number').val();
+            reservationdata.uhrzeit = $('#time').val();
+            reservationdata.datum = $('#date').val();
             socket.emit('reservationdata', reservationdata);
             //$('#initalPage').empty();
         });

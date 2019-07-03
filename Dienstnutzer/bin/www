@@ -99,10 +99,21 @@ io.on('connection', function(socket){
     socket.on('reservationdata', function(reservationdata){
         console.log(reservationdata);
         //Datenübertragung an den Dienstgeber
-        /*request.post('http://exo.ovh:3000/reserve/', reservationdata [{'content-type': 'application/json', body: JSON.stringify(anzahl_personen: 'reservationdata.number');}], function(error, response, body) {
+        /*request.post('http://exo.ovh:3000/reserve/', reservationdata [{'content-type': 'application/json', body: JSON.stringify(anzahl_personen: reservationdata.number)}], function(error, response, body) {
             console.log('error:', error);
             console.log('statusCode:', response && response.statusCode);
             console.log('body:', body);
         });*/
+
+        request.post({
+            headers: {'content-type' : 'application/json'},
+            url:     'http://exo.ovh:3000/reserve/',
+            body:    reservationdata,
+            json: true
+        }, function(error, response, body){
+            console.log(body);
+        });
+
+
     });
 });
