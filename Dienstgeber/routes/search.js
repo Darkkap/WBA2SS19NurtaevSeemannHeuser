@@ -41,10 +41,8 @@ router.post('/', function (req, res, next) {  // Neue Suchanfrage anlegen
             next();
             res.end();
         } else {
-            connection.query("SELECT LAST_INSERT_ID()", function (error, results, fields) {
-                console.log(results);
-                insertobj.ID = results;
-                res.status(200).json(insertobj);
+            connection.query("SELECT LAST_INSERT_ID() as id", function (error, results, fields) {
+                res.status(200).json(results);
                 next();
                 res.end();
             });
@@ -116,7 +114,6 @@ router.put('/id:id', function (req, res, next) {      //Bearbeiten der Daten der
                     } else {
                         doAdvice(data, id, function (advice,mathobject) {
                             connection.query("update suche set advice='"+advice+"' where suche_id='"+id+"'", function (error, results, fields) {});
-                            console.log(mathobject);
                             res.status(200).write("Changed Data.");
                             next();
                             res.end();
@@ -170,7 +167,7 @@ function doAdvice(data, id, callback) {     //Advice Funktion
     calculation_data.parkhaus = [];
     connection.query("Select * from suche where suche_id='" + id + "'", function (error, results, fields) { //Aufruf der Informationen bzgl. der Suche
         advice_data = results;
-        connection.query("Select * from parkhaus_info", function (error, results, fields) {                 //Informationen bzgl. Parkhäuser lesen
+        connection.query("Select * from parkhaus_info where winkel > 1 ", function (error, results, fields) {                 //Informationen bzgl. Parkhäuser lesen
             for (let x = 0; x <= results.length - 1; x++) {
                 calculation_data.parkhaus.push(results[x]);
             }

@@ -125,8 +125,16 @@ router.get('/cancellations', function (req, res, next) {      //Abruf Stornierte
 });
 
 router.post('/cancellations', function (req, res, next) {      //Erstellen einer Stornierung
-    var stornierung = {};
-    connection.query("Insert into stornierung values ('','','')", function (error, results, fields) {
+    let stornierung = {};
+    let reservierungsid = 0;
+
+    if(req.body.reserveid === undefined) {
+        reservierungsid = 0;
+    } else {
+        reservierungsid = req.body.reserveid;
+    }
+
+    connection.query("Insert into stornierung values ('','"+reservierungsid+"','0')", function (error, results, fields) {
         if (error) {
             res.status(404).json({"stornierung": "Error. Fehler beim anlegen der Stornierung"});
             next();

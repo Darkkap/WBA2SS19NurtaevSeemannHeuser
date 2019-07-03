@@ -29,17 +29,31 @@ router.get('/', function(req, res, next) {  // Alle Parkhäuser
 });
 
 router.post('/', function(req, res, next) { // Anlegen eines neuen Parkhaus
-  let insertobj = {};
-  connection.query("Insert into  parkhaus_info values ('','','','')", function (error, results, fields) {
+
+  let position = 0;
+  if(req.body.position !== undefined) {
+    position = req.body.position;
+  }
+  let parkhaus_id =0;
+  if(req.body.parkhaus_id !== undefined) {
+    parkhaus_id = req.body.parkhaus_id;
+  }
+  let winkel = 0;
+  if(req.body.winkel !== undefined) {
+    winkel = req.body.winkel;
+  }
+
+
+
+
+  connection.query("Insert into  parkhaus_info values ('','"+position+"','"+parkhaus_id+"','"+winkel+"')", function (error, results, fields) {
     if (error) {
       res.status(404).json({"Parkhaus": "Error. Fehler beim anlegen"});
       next();
       res.end();
     } else {
-      connection.query("SELECT LAST_INSERT_ID()", function (error, results, fields) {
-        console.log(results);
-        insertobj.ID = results;
-        res.status(200).json(insertobj);
+      connection.query("SELECT LAST_INSERT_ID() as id", function (error, results, fields) {
+        res.status(200).json(results);
         next();
         res.end();
       });
