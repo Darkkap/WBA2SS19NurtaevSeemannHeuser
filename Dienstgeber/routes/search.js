@@ -153,6 +153,7 @@ function request_winkel(position, callback) {
                 ausrichtung = ausrichtung.replace("d", " ");
                 ausrichtung = ausrichtung.replace("e", " ");
                 ausrichtung = ausrichtung.replace("g", " ");
+                ausrichtung = ausrichtung.replace("z", " ");
                 ausrichtung = ausrichtung.replace("g", " ");
                 ausrichtung = ausrichtung.replace(";", " ");
                 ausrichtung = ausrichtung.replace(")", " ");
