@@ -1,16 +1,3 @@
-<script>
-    let reservationdata = {};
-    //get coordinates
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
-    }
-    function showPosition(position) {   // If Access Granted Set GPS Position in Long/Lat.
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        reservationdata.gps = latitude+','+longitude;
-    }
-</script>
-
 <html>
 <head>
     <title>Express</title>
@@ -44,34 +31,29 @@
 </div>
 <div id="searchCarparks">
     <p>Hier sehen Sie Ihre Route zum nächstmöglichen Parkhaus</p>
-<<<<<<< HEAD
     <iframe id="googleframe" target="_top" width="600"
             height="450"
             frameborder="0" style="border:0"
             src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyBVgTiWDbf4snT64vZvGfEZ36qXWPewvko&origin=51.031551778036544+7.566896077101712&destination=Cologne+Germany"
             allowfullscreen></iframe>
-=======
-    <div id="nav"></div>
-    <script type="text/javascript">
-        document.getElementById('nav').innerHTML = '' + '<iframe target="_top" width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyBVgTiWDbf4snT64vZvGfEZ36qXWPewvko&origin='+reservationdata.gps+'&destination=Cologne+Germany" allowfullscreen></iframe>';
-    </script>
->>>>>>> a1acbbb34e34d61e0c5a2a48be96ad2cfb3c3ab1
 </div>
 
 <script>
+    let reservationdata = {};
     $(function () {//Socketio setup
         let latitude = 0;
         let longitude = 0;
         let socket = io('http://localhost:3030/');
         socket.on('message', function () {
+            console.log("Verbindung wurde aufgebaut");
         });
         $('#reserveCarpark').hide();
         $('#gebucht').hide();
         $('#nichtGebucht').hide();
         $('#afterReservation').hide();
         $('#searchCarparks').hide();
-        //Hier wird das Reservierungsdaten Objekt angereichert und an den Dienstnutzer übergeben
         $('#reserveRestaurant').click(function (e) {
+            console.log("Button Restaurant Test");
             e.preventDefault(); // prevents page reloading
             reservationdata.anzahl_personen = $('#number').val();
             reservationdata.uhrzeit = $('#time').val();
@@ -79,6 +61,7 @@
             socket.emit('reservationdata', reservationdata);
             $('#initalPage').hide();
             socket.on('response', function (response) {
+                console.log("Erhalte Informationen vom Dienstnutzer");
                 if (response.statusCode == 200) {
                     $('#afterReservation').show();
                     $('#gebucht').show();
@@ -89,7 +72,6 @@
                 }
             })
         });
-<<<<<<< HEAD
         //get coordinates
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
@@ -121,18 +103,6 @@
         })
 
 
-=======
-        //Hier werden die Reservierungsdaten an den Dienstnutzer übergeben um anschließend eine Parkhaussuche zu starten
-        $('#reserveCarpark').click(function (e) {
-            console.log("Button Carpark Test");
-            e.preventDefault(); // prevents page reloading
-            socket.emit('position', reservationdata);
-            //Hier wird die Position eingebunden?
-            $('#gebucht').hide();
-            $('#reserveCarpark').hide();
-            $('#searchCarparks').show();
-        });
->>>>>>> a1acbbb34e34d61e0c5a2a48be96ad2cfb3c3ab1
     });
 
 
