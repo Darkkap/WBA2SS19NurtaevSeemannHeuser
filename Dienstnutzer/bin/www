@@ -97,9 +97,8 @@ io.on('connection', function(socket){
     socket.emit('message',{hello:"world"});
 
     socket.on('reservationdata', function(reservationdata){
-        console.log(reservationdata);
+        console.log('Socket reservationdata: ',reservationdata);
         //Datenübertragung der Restaurantreservierung an den Dienstgeber
-
         request.post({
             headers: {'content-type' : 'application/json'},
             url:     'http://exo.ovh:3000/reserve/',
@@ -111,16 +110,16 @@ io.on('connection', function(socket){
         });
     });
 
-    socket.on('position', function(showPosition) {
-        console.log(showPosition);
+    socket.on('position', function (reservationdata) {
+        console.log('Socket position: ',reservationdata);
         //Neues Search wird angelegt und Client-Positionsdaten übergeben
-        /*request.post({
+        request.post({
             headers: {'content-type' : 'application/json'},
             url:     'http://exo.ovh:3000/search/',
-            body:    showPosition,
+            body:    1 + reservationdata.datum + reservationdata.uhrzeit + reservationdata.gps_coordinate,
             json: true
         }, function(error, response, body){
             console.log('Daten übertragen:', body);
-        });*/
+        });
     });
 });

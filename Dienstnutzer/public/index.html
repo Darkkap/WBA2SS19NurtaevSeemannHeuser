@@ -34,11 +34,12 @@
     <iframe target="_top" width="600"
             height="450"
             frameborder="0" style="border:0"
-            src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyBVgTiWDbf4snT64vZvGfEZ36qXWPewvko&origin=Oslo+Norway&destination=Telemark+Norway"
+            src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyBVgTiWDbf4snT64vZvGfEZ36qXWPewvko&origin=51.031551778036544+7.566896077101712&destination=Cologne+Germany"
             allowfullscreen></iframe>
 </div>
 
 <script>
+    let reservationdata = {};
     $(function () {//Socketio setup
         let latitude = 0;
         let longitude = 0;
@@ -51,27 +52,26 @@
         $('#nichtGebucht').hide();
         $('#afterReservation').hide();
         $('#searchCarparks').hide();
-            $('#reserveRestaurant').click(function (e) {
-                console.log("Button Restaurant Test");
-                let reservationdata = {};
-                e.preventDefault(); // prevents page reloading
-                reservationdata.anzahl_personen = $('#number').val();
-                reservationdata.uhrzeit = $('#time').val();
-                reservationdata.datum = $('#date').val();
-                socket.emit('reservationdata', reservationdata);
-                $('#initalPage').hide();
-                socket.on('response', function (response) {
-                    console.log("Erhalte Informationen vom Dienstnutzer");
-                    if (response.statusCode == 200) {
-                        $('#afterReservation').show();
-                        $('#gebucht').show();
-                        $('#reserveCarpark').show();
-                    } else {
-                        $('#afterReservation').show();
-                        $('#nichtGebucht').show();
-                    }
-                })
-            });
+        $('#reserveRestaurant').click(function (e) {
+            console.log("Button Restaurant Test");
+            e.preventDefault(); // prevents page reloading
+            reservationdata.anzahl_personen = $('#number').val();
+            reservationdata.uhrzeit = $('#time').val();
+            reservationdata.datum = $('#date').val();
+            socket.emit('reservationdata', reservationdata);
+            $('#initalPage').hide();
+            socket.on('response', function (response) {
+                console.log("Erhalte Informationen vom Dienstnutzer");
+                if (response.statusCode == 200) {
+                    $('#afterReservation').show();
+                    $('#gebucht').show();
+                    $('#reserveCarpark').show();
+                } else {
+                    $('#afterReservation').show();
+                    $('#nichtGebucht').show();
+                }
+            })
+        });
         //get coordinates
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
@@ -80,16 +80,19 @@
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
         }
-
-        $('#reserveCarpark').click(function (e) {
-            console.log("Button Carpark Test");
-            e.preventDefault(); // prevents page reloading
-            socket.emit('position', showPosition());
-            //Hier wird die Position eingebunden?
-            $('#gebucht').hide();
-            $('#reserveCarpark').hide();
-            $('#searchCarparks').show();
-        });
+            $('#reserveCarpark').click(function (e) {
+                console.log(latitude);
+                console.log(longitude);
+                reservationdata.gps_coordinate = latitude+','+longitude;
+                console.log(reservationdata);
+                console.log("Button Carpark Test");
+                e.preventDefault(); // prevents page reloading
+                socket.emit('position', reservationdata);
+                //Hier wird die Position eingebunden?
+                $('#gebucht').hide();
+                $('#reserveCarpark').hide();
+                $('#searchCarparks').show();
+            });
     });
 </script>
 </body>
