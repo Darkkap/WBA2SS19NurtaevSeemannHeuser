@@ -83,7 +83,7 @@
             $('#reserveCarpark').click(function (e) {
                 console.log(latitude);
                 console.log(longitude);
-                reservationdata.gps_coordinate = latitude+','+longitude;
+                reservationdata.gps = latitude+','+longitude+',12.75';
                 console.log(reservationdata);
                 console.log("Button Carpark Test");
                 e.preventDefault(); // prevents page reloading
