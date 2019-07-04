@@ -92,7 +92,7 @@ router.post('/', function (req, res, next) {  // Neue Suchanfrage anlegen
                         } else {
                             doAdvice(data, id, function (advice,mathobject) {
                                 connection.query("update suche set advice='"+advice+"' where suche_id='"+id+"'", function (error, results, fields) {});
-                                res.status(200).write("ID: "+id);
+                                res.status(200).json({"id":id,"advice":advice});
                                 next();
                                 res.end();
                             });

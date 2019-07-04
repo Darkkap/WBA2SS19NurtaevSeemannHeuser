@@ -120,6 +120,20 @@ io.on('connection', function(socket){
             json: true
         }, function(error, response, body){
             console.log('Daten übertragen:', body);
+            console.log(body.id);
+
+            request.get({
+                headers: {'content-type' : 'application/json'},
+                url:     'http://exo.ovh:3000/carparks/id:'+body.advice,
+                body:    reservationdata,
+                json: true
+            }, function(error, response, body_search_data){
+
+                console.log(body_search_data);
+                socket.emit('search_response', body_search_data);
+            });
+
+
         });
     });
 });

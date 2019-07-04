@@ -31,7 +31,7 @@
 </div>
 <div id="searchCarparks">
     <p>Hier sehen Sie Ihre Route zum nächstmöglichen Parkhaus</p>
-    <iframe target="_top" width="600"
+    <iframe id="googleframe" target="_top" width="600"
             height="450"
             frameborder="0" style="border:0"
             src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyBVgTiWDbf4snT64vZvGfEZ36qXWPewvko&origin=51.031551778036544+7.566896077101712&destination=Cologne+Germany"
@@ -83,7 +83,7 @@
             $('#reserveCarpark').click(function (e) {
                 console.log(latitude);
                 console.log(longitude);
-                reservationdata.gps = latitude+','+longitude+',12.75';
+                reservationdata.gps = latitude+','+longitude;
                 console.log(reservationdata);
                 console.log("Button Carpark Test");
                 e.preventDefault(); // prevents page reloading
@@ -91,9 +91,22 @@
                 //Hier wird die Position eingebunden?
                 $('#gebucht').hide();
                 $('#reserveCarpark').hide();
-                $('#searchCarparks').show();
+
+
             });
+            socket.on('search_response', function (search_data) {
+            console.log("Search Response vom Dienstnutzer");
+            let dest = search_data.suche[0].position.split(",");
+                let url = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyBVgTiWDbf4snT64vZvGfEZ36qXWPewvko&origin="+reservationdata.gps+"&destination="+dest[0]+','+dest[1];//response;
+                $("#googleframe").attr('src',url);
+                $('#searchCarparks').show();
+        })
+
+
     });
+
+
+
 </script>
 </body>
 </html>
