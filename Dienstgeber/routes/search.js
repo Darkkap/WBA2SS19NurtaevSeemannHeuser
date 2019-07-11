@@ -92,7 +92,7 @@ router.post('/', function (req, res, next) {  // Neue Suchanfrage anlegen
                         } else {
                             doAdvice(data, id, function (advice,mathobject) {
                                 connection.query("update suche set advice='"+advice+"' where suche_id='"+id+"'", function (error, results, fields) {});
-                                res.status(200).json({"id":id,"advice":advice});
+                                res.status(200).json({"id":id,"advice":advice,"parkdrive_data":mathobject});
                                 next();
                                 res.end();
                             });
@@ -306,7 +306,7 @@ function doAdvice(data, id, callback) {     //Advice Funktion
                                                 callback(parkhaus_object.specsearch_parkhaus[ixy], parkhaus_object);
                                                 ixy = parkhaus_object.specsearch_parkhaus.length;
                                             } else if(ixy === parkhaus_object.specsearch_parkhaus.length - 1) { //Wenn kein passendes Parkhaus gefunden werden kann -> 0 zurückgeben.
-                                                callback(0,0);
+                                                callback(0,parkhaus_object);
                                             }
                                         }
                                     }
