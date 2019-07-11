@@ -247,7 +247,7 @@ function doAdvice(data, id, callback) {     //Advice Funktion
             });
             let parkhaus_object = {};                                                                                        //Anlegen eines Objektes für die Berechnung der Parkhausdaten
             parkhaus_object.amount = [];
-            parkhaus_object.total = [];
+            parkhaus_object.datasets = [];
             parkhaus_object.max = [];
             let helper = advice_data[0].datum;                                                                          //Split der Eingegebenen Datums Infos
             helper = helper.split(".");
@@ -262,7 +262,7 @@ function doAdvice(data, id, callback) {     //Advice Funktion
             for (let y = 0; y <= helper_array.length - 1; y++) {                                                        //Loop durch das Helper Array, da es die Infos bzgl. Parkhäuser enthält (auch Menge)
                 parkhaus_object.amount[y] = 0;
                 parkhaus_object.max[y] = 0;
-                parkhaus_object.total[y] = 0;
+                parkhaus_object.datasets[y] = 0;
                 parkhaus_object.specsearch_free = [];                                                                        // Frei zur STUNDE & MINUTE Letzte Woche/2W./3W.
                 parkhaus_object.specsearch_parkhaus = [];                                                                    // Parkhaus_ID zum Objekt zur Identifizierung
                 parkhaus_object.specsearch_free_current = [];                                                                // FREI LIVE
@@ -270,7 +270,7 @@ function doAdvice(data, id, callback) {     //Advice Funktion
                     parkhaus_object.max[y] = resulte[0].gesamt;                                                              //Abruf der Daten der Letzten 3 Wochen zur Angegebenen Stunde & Tag
                     for (let ic = 0; ic <= resulte.length - 1; ic++) {                                                  // Werte Parsen, anzahl erhöhen.
                         parkhaus_object.amount[y] += parseInt(resulte[ic].frei);
-                        parkhaus_object.total[y] += 1;
+                        parkhaus_object.datasets[y] += 1;
                     }
                     if (y === helper_array.length - 1) {
                         for (let iy = 0; iy <= parkhaus_object.amount.length - 1; iy++) {
@@ -295,13 +295,13 @@ function doAdvice(data, id, callback) {     //Advice Funktion
                                             console.log("Spec Search: ID " + parkhaus_object.specsearch_parkhaus[ixy]);
                                             console.log("Spec Search: Frei " + parkhaus_object.specsearch_free[ixy]);
                                             console.log("Spec Search: Frei_CURRENT " + parkhaus_object.specsearch_free_current[ixy]);
-                                            console.log("Durchschnitt frei: " + parkhaus_object.amount[ixy] / parkhaus_object.total[ixy]);
+                                            console.log("Durchschnitt frei: " + parkhaus_object.amount[ixy] / parkhaus_object.datasets[ixy]);
                                             console.log("Faktor: " + parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]);
-                                            console.log("Durchschnitt bearbeitet: " + parkhaus_object.amount[ixy] / parkhaus_object.total[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]);
-                                            if (parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] <= 0.75 && (parkhaus_object.amount[ixy] / parkhaus_object.total[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]) <= 30 || isNaN(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy])) {
+                                            console.log("Durchschnitt bearbeitet: " + parkhaus_object.amount[ixy] / parkhaus_object.datasets[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]);
+                                            if (parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] <= 0.75 && (parkhaus_object.amount[ixy] / parkhaus_object.datasets[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]) <= 30 || isNaN(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy])) {
                                                 //Wenn der Faktor der Abweichung über 25% entspricht anderes Parkhaus wählen, oder wenn die Mindestanzahl an Plätze im Parkhaus mit korrigiertem Wert <= 30 ist nächstes Parkhaus testen
                                                 //console.log("differenz zu groß bei parkhausid: " + mathobject.specsearch_parkhaus[ixy] + " oder zu wenig freie plätze");
-                                            } else if(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] > 0.75 && (parkhaus_object.amount[ixy] / parkhaus_object.total[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]) > 30 || isNaN(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] === false)){
+                                            } else if(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] > 0.75 && (parkhaus_object.amount[ixy] / parkhaus_object.datasets[ixy] * parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy]) > 30 || isNaN(parkhaus_object.specsearch_free_current[ixy] / parkhaus_object.specsearch_free[ixy] === false)){
                                                 // Passendes Parkhaus gefunden, Callback ausführen mit Parkhaus_ID & Mathobject
                                                 callback(parkhaus_object.specsearch_parkhaus[ixy], parkhaus_object);
                                                 ixy = parkhaus_object.specsearch_parkhaus.length;
